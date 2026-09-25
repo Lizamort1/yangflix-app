@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ĐẢO PHIM - YangFlix | Xem Phim Online Miễn Phí 4K & Tải App Android TV</title>
+  <meta name="description" content="Đảo Phim & YangFlix - Xem phim online miễn phí chất lượng 4K HDR. Cập nhật phim lẻ, phim bộ, hoạt hình vietsub mới nhất. Tải ứng dụng cho Android TV và Điện thoại." />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/yangflix-icon.png" />
+  
+  <!-- Google Fonts: Be Vietnam Pro (authentic DaoPhim font) & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- HLS.js for Streaming Video Playback -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <!-- Left: Logo & Nav items -->
+      <div class="nav-left">
+        <a href="#home" class="logo-link" onclick="navigateTab('home')">
+          <img src="assets/images/yangflix-logo.png" alt="YangFlix - Đảo Phim" class="navbar-logo" />
+        </a>
+
+        <nav class="nav-menu">
+          <a href="#home" class="nav-item active" data-tab="home" onclick="navigateTab('home')">Trang Chủ</a>
+          <a href="#phim-le" class="nav-item" data-tab="phim-le" onclick="filterCatalog('single')">Phim Lẻ</a>
+          <a href="#phim-bo" class="nav-item" data-tab="phim-bo" onclick="filterCatalog('series')">Phim Bộ</a>
+          <a href="#song-ngu" class="nav-item" data-tab="song-ngu" onclick="filterCatalog('song-ngu')">Song Ngữ</a>
+          
+          <!-- Dropdown: Thể Loại -->
+          <div class="dropdown">
+            <button class="dropdown-trigger">
+              Thể Loại <i class="fa-solid fa-angle-down"></i>
+            </button>
+            <div class="dropdown-menu categories-grid" id="genre-dropdown">
+              <a href="#" onclick="filterByGenre('Hành Động')">Hành Động</a>
+              <a href="#" onclick="filterByGenre('Viễn Tưởng')">Viễn Tưởng</a>
+              <a href="#" onclick="filterByGenre('Khoa Học')">Khoa Học</a>
+              <a href="#" onclick="filterByGenre('Tình Cảm')">Tình Cảm</a>
+              <a href="#" onclick="filterByGenre('Hài Hước')">Hài Hước</a>
+              <a href="#" onclick="filterByGenre('Kinh Dị')">Kinh Dị</a>
+              <a href="#" onclick="filterByGenre('Cổ Trang')">Cổ Trang</a>
+              <a href="#" onclick="filterByGenre('Hoạt Hình')">Hoạt Hình</a>
+              <a href="#" onclick="filterByGenre('Tâm Lý')">Tâm Lý</a>
+              <a href="#" onclick="filterByGenre('Bí Ẩn')">Bí Ẩn</a>
+              <a href="#" onclick="filterByGenre('Chiến Tranh')">Chiến Tranh</a>
+              <a href="#" onclick="filterByGenre('Gia Đình')">Gia Đình</a>
+            </div>
+          </div>
+
+          <!-- Dropdown: Quốc Gia -->
+          <div class="dropdown">
+            <button class="dropdown-trigger">
+              Quốc Gia <i class="fa-solid fa-angle-down"></i>
+            </button>
+            <div class="dropdown-menu" id="country-dropdown">
+              <a href="#" onclick="filterByCountry('Trung Quốc')">Trung Quốc</a>
+              <a href="#" onclick="filterByCountry('Hàn Quốc')">Hàn Quốc</a>
+              <a href="#" onclick="filterByCountry('Âu Mỹ')">Âu Mỹ</a>
+              <a href="#" onclick="filterByCountry('Nhật Bản')">Nhật Bản</a>
+              <a href="#" onclick="filterByCountry('Thái Lan')">Thái Lan</a>
+              <a href="#" onclick="filterByCountry('Việt Nam')">Việt Nam</a>
+            </div>
+          </div>
+
+          <!-- Tab Tải Ứng Dụng -->
+          <a href="#tai-ung-dung" class="nav-item nav-download-badge" data-tab="tai-ung-dung" onclick="navigateTab('tai-ung-dung')">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Tải App TV & Phone
+          </a>
+        </nav>
+      </div>
+
+      <!-- Right: Search & Actions -->
+      <div class="nav-right">
+        <!-- Live Search Box -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" placeholder="Tìm tên phim, diễn viên..." autocomplete="off" />
+          <button id="search-clear" class="btn-clear hidden"><i class="fa-solid fa-xmark"></i></button>
+          
+          <!-- Instant Search Suggestions Dropdown -->
+          <div class="search-suggestions hidden" id="search-suggestions"></div>
+        </div>
+
+        <a href="#tai-ung-dung" class="btn-header-cta" onclick="navigateTab('tai-ung-dung')">
+          <i class="fa-solid fa-tv"></i> Tải Cho TV
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW: HOME & MOVIE CATALOG -->
+  <main id="view-home" class="page-view active">
+    <!-- Spotlight Hero Banner (Featured Film) -->
+    <section class="spotlight" id="spotlight">
+      <div class="spotlight-backdrop" id="spotlight-backdrop"></div>
+      <div class="spotlight-overlay"></div>
+      
+      <div class="container spotlight-content">
+        <div class="spotlight-info">
+          <div class="spotlight-badges" id="spotlight-badges">
+            <span class="badge badge-quality">4K ULTRA HD</span>
+            <span class="badge badge-year" id="spotlight-year">2026</span>
+            <span class="badge badge-lang" id="spotlight-lang">Vietsub</span>
+            <span class="badge badge-hot"><i class="fa-solid fa-fire"></i> THỊNH HÀNH</span>
+          </div>
+
+          <h1 class="spotlight-title" id="spotlight-title">Độc Kiếm Cửu Thiên</h1>
+          <h2 class="spotlight-origin-title" id="spotlight-origin">Sword God</h2>
+
+          <p class="spotlight-desc" id="spotlight-desc">
+            Câu chuyện phiêu lưu huyền huyễn kỳ ảo về kiếm đạo đỉnh phong, những trận chiến chấn động tam giới và hành trình bảo vệ chân lý bất diệt.
+          </p>
+
+          <div class="spotlight-actions">
+            <button class="btn btn-primary" id="spotlight-play-btn">
+              <i class="fa-solid fa-play"></i> Xem Ngay
+            </button>
+            <button class="btn btn-outline" id="spotlight-detail-btn">
+              <i class="fa-solid fa-circle-info"></i> Thông Tin Chi Tiết
+            </button>
+          </div>
+        </div>
+
+        <div class="spotlight-poster-wrapper">
+          <img src="" alt="Poster" id="spotlight-poster" class="spotlight-poster" />
+        </div>
+      </div>
+    </section>
+
+    <!-- App Promo Quick Bar -->
+    <section class="app-banner-strip">
+      <div class="container strip-content">
+        <div class="strip-left">
+          <img src="assets/images/yangflix-icon.png" alt="App Icon" class="strip-icon" />
+          <div class="strip-text">
+            <strong>Trải nghiệm xem phim mượt mà nhất trên Smart TV & Điện thoại!</strong>
+            <p>Hỗ trợ Android TV, Google TV, Box VNPT, Viettel, FPT Play. Không quảng cáo, chuẩn 4K.</p>
+          </div>
+        </div>
+        <div class="strip-right">
+          <div class="strip-tv-code">
+            <span>Mã Downloader trên TV:</span>
+            <code>27p4mvb7</code>
+          </div>
+          <a href="#tai-ung-dung" class="btn btn-sm btn-accent" onclick="navigateTab('tai-ung-dung')">
+            <i class="fa-solid fa-download"></i> Tải Ứng Dụng Ngay
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Topics / Tags (DaoPhim feature) -->
+    <section class="topics-section">
+      <div class="container">
+        <div class="topics-wrapper">
+          <span class="topics-label"><i class="fa-solid fa-compass"></i> Bạn đang quan tâm gì?</span>
+          <div class="topics-list">
+            <button class="topic-chip active" onclick="filterCatalog('all')">Tất Cả</button>
+            <button class="topic-chip" onclick="filterByGenre('Viễn Tưởng')">Phim 4K</button>
+            <button class="topic-chip" onclick="filterCatalog('series')">Phim Bộ Mới</button>
+            <button class="topic-chip" onclick="filterCatalog('single')">Phim Lẻ Chiếu Rạp</button>
+            <button class="topic-chip" onclick="filterByCountry('Trung Quốc')">Phim Trung Quốc</button>
+            <button class="topic-chip" onclick="filterByCountry('Hàn Quốc')">Phim Hàn Quốc</button>
+            <button class="topic-chip" onclick="filterByGenre('Hoạt Hình')">Anime & Hoạt Hình</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Movie Catalog Rails -->
+    <section class="catalog-section">
+      <div class="container">
+        <!-- Section: Phim Mới Cập Nhật -->
+        <div class="catalog-header">
+          <div class="header-title-wrap">
+            <div class="header-indicator"></div>
+            <h3 class="catalog-title" id="catalog-heading">Phim Mới Cập Nhật</h3>
+          </div>
+          <div class="catalog-counter" id="catalog-count">Đang tải...</div>
+        </div>
+
+        <div class="movie-grid" id="movie-grid">
+          <!-- Dynamically populated by main.js -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- VIEW: APP DOWNLOAD PAGE (/tai-ung-dung) -->
+  <main id="view-tai-ung-dung" class="page-view">
+    <!-- Hero Section -->
+    <section class="download-page-hero">
+      <div class="container text-center">
+        <div class="hero-badge">
+          <i class="fa-solid fa-sparkles"></i> Ứng Dụng Đa Nền Tảng Chính Thức v1.0.0
+        </div>
+        <h1 class="download-page-title">
+          ĐẢO PHIM & YangFlix <br /><span class="gradient-text">Ở Khắp Mọi Nơi</span>
+        </h1>
+        <p class="download-page-subtitle">
+          Xem hàng ngàn bộ phim bom tấn và chương trình độc quyền với chất lượng siêu nét. Tải ngay ứng dụng đa nền tảng để không bỏ lỡ bất kỳ khoảnh khắc nào.
+        </p>
+      </div>
+    </section>
+
+    <!-- Platform Cards Grid -->
+    <section class="platform-cards-section">
+      <div class="container">
+        <div class="platform-grid">
+          <!-- Card 1: Smart TV (Featured) -->
+          <div class="p-card p-card-featured">
+            <div class="p-badge"><i class="fa-solid fa-crown"></i> DÀNH CHO SMART TV</div>
+            <div class="p-icon tv-icon-bg"><i class="fa-solid fa-tv"></i></div>
+            <h3 class="p-title">Smart TV & TV Box</h3>
+            <p class="p-desc">Trải nghiệm rạp chiếu tại nhà chuẩn 4K HDR. Tương thích 100% điều khiển Remote trên Android TV, Google TV, Sony, Xiaomi, TCL, Casper, Box VNPT, Viettel, FPT Play.</p>
+            
+            <div class="p-specs">
+              <div><i class="fa-solid fa-check"></i> Tối ưu remote 100%</div>
+              <div><i class="fa-solid fa-check"></i> Độ phân giải 4K HDR sắc nét</div>
+              <div><i class="fa-solid fa-check"></i> Tệp: <code>YangFlix-TV-release.apk</code> (100.3 MB)</div>
+            </div>
+
+            <!-- Direct TV Download Button -->
+            <a href="https://github.com/Lizamort1/yangflix-app/releases/download/v1.0.0/YangFlix-TV-release.apk" class="btn btn-block btn-accent" download>
+              <i class="fa-solid fa-download"></i> Tải Trực Tiếp APK TV
+            </a>
+
+            <!-- Downloader Code Box -->
+            <div class="tv-code-box">
+              <span class="tv-code-label"><i class="fa-solid fa-keyboard"></i> Nhập trên App Downloader của TV:</span>
+              <div class="tv-code-row">
+                <span class="tv-code-val">tinyurl.com/27p4mvb7</span>
+                <button class="btn-copy" onclick="copyText('tinyurl.com/27p4mvb7', 'Đã sao chép link Downloader TV!')" title="Sao chép">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+              <small class="tv-code-hint">Hoặc tải file APK vào USB rồi cắm vào TV để cài đặt.</small>
+            </div>
+          </div>
+
+          <!-- Card 2: Android Smartphone -->
+          <div class="p-card">
+            <div class="p-icon android-icon-bg"><i class="fa-brands fa-android"></i></div>
+            <h3 class="p-title">Điện Thoại Android</h3>
+            <p class="p-desc">Giao diện cảm ứng hiện đại, vuốt chạm mượt mà, đồng bộ lịch sử xem, tìm kiếm thông minh và hỗ trợ tải phim tiện lợi.</p>
+            
+            <div class="p-specs">
+              <div><i class="fa-solid fa-check"></i> Cảm ứng mượt mà, xoay ngang dọc</div>
+              <div><i class="fa-solid fa-check"></i> Tương thích Samsung, Xiaomi, Oppo...</div>
+              <div><i class="fa-solid fa-check"></i> Tệp: <code>YangFlix-release.apk</code> (101.2 MB)</div>
+            </div>
+
+            <!-- Direct Mobile Download Button -->
+            <a href="https://github.com/Lizamort1/yangflix-app/releases/download/v1.0.0/YangFlix-release.apk" class="btn btn-block btn-primary" download>
+              <i class="fa-solid fa-download"></i> Tải Trực Tiếp APK Điện Thoại
+            </a>
+
+            <!-- QR Code Button -->
+            <div class="qr-box">
+              <button class="btn btn-sm btn-ghost" onclick="toggleQRCode()">
+                <i class="fa-solid fa-qrcode"></i> Quét mã QR bằng Camera điện thoại
+              </button>
+              <div class="qr-popup hidden" id="qr-popup">
+                <div id="qrcode-target"></div>
+                <p>Quét mã để tải tệp APK về máy</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: iOS & iPadOS -->
+          <div class="p-card p-card-muted">
+            <div class="p-icon apple-icon-bg"><i class="fa-brands fa-apple"></i></div>
+            <h3 class="p-title">iOS & iPadOS</h3>
+            <p class="p-desc">Trình phát video được tối ưu hóa riêng cho màn hình Super Retina với hỗ trợ âm thanh vòm Spatial Audio và Picture in Picture.</p>
+            
+            <div class="p-specs">
+              <div><i class="fa-solid fa-clock"></i> Đang hoàn thiện bản TestFlight</div>
+              <div><i class="fa-solid fa-circle-check"></i> Tương thích iPhone & iPad</div>
+            </div>
+
+            <button class="btn btn-block btn-outline" disabled>
+              <i class="fa-solid fa-hourglass-half"></i> Sắp Ra Mắt
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TV Installation Steps -->
+    <section class="guide-section">
+      <div class="container">
+        <div class="section-title-wrap text-center">
+          <span class="sub-title">HƯỚNG DẪN CHI TIẾT</span>
+          <h2>4 Bước Cài Đặt YangFlix Lên Smart TV</h2>
+          <p>Cực kỳ đơn giản bằng ứng dụng Downloader có sẵn trên CH Play TV:</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-count">01</span>
+            <div class="step-icon"><i class="fa-brands fa-google-play"></i></div>
+            <h4>Cài App Downloader</h4>
+            <p>Mở CH Play trên TV, tìm kiếm app <code>Downloader</code> (biểu tượng màu cam của AFTVnews) và cài đặt.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-count">02</span>
+            <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h4>Cấp Quyền Cài Đặt</h4>
+            <p>Vào Cài đặt TV > Bảo mật / Ứng dụng > Cài đặt ứng dụng không rõ nguồn gốc > Bật Cho phép cho Downloader.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-count">03</span>
+            <div class="step-icon"><i class="fa-solid fa-link"></i></div>
+            <h4>Nhập Đường Link</h4>
+            <p>Mở Downloader, tại ô URL nhập: <code class="highlight-link">tinyurl.com/27p4mvb7</code> rồi bấm nút <strong>Go</strong>.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-count">04</span>
+            <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h4>Bấm Cài Đặt</h4>
+            <p>File APK sẽ tự động tải về 100%. Khi màn hình hiện thông báo hỏi, bạn chọn <strong>Cài đặt (Install)</strong> là xong!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section-title-wrap text-center">
+          <span class="sub-title">GIẢI ĐÁP</span>
+          <h2>Câu Hỏi Thường Gặp Về Ứng Dụng</h2>
+        </div>
+
+        <div class="faq-container">
+          <details class="faq-item" open>
+            <summary>1. Ứng dụng có tốn phí khi tải không?</summary>
+            <p>Hoàn toàn miễn phí trên mọi nền tảng! Bạn có thể xem hàng ngàn tựa phim điện ảnh, phim bộ với độ phân giải cao nhất mà không mất bất kỳ chi phí nào.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>2. Tôi có thể tải phim về xem lúc mất mạng không?</summary>
+            <p>Có! Chức năng tải xuống ngoại tuyến được tích hợp sẵn trên ứng dụng điện thoại. Phim sẽ được lưu an toàn trong thiết bị để xem lại khi không có kết nối Wi-Fi.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>3. TV Samsung (Tizen) hay LG (webOS) có cài được không?</summary>
+            <p>Hệ điều hành Tizen và webOS của Samsung/LG không chạy trực tiếp file APK Android. Bạn chỉ cần cắm thêm 1 Android TV Box hoặc TV Stick (như Xiaomi Mi Stick, Google Chromecast) qua cổng HDMI là có thể cài đặt dễ dàng.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>4. Ứng dụng có an toàn đối với thông tin cá nhân không?</summary>
+            <p>Ứng dụng không thu thập dữ liệu nhạy cảm hay đòi hỏi quyền can thiệp danh bạ, định vị. File APK được phát hành chính thức trực tiếp từ GitHub Releases bảo đảm sạch 100%.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MOVIE DETAIL & STREAMING PLAYER MODAL -->
+  <div class="modal-overlay hidden" id="movie-modal">
+    <div class="modal-dialog">
+      <button class="modal-close" id="modal-close-btn" title="Đóng">&times;</button>
+      
+      <!-- Video Player Area -->
+      <div class="player-container hidden" id="player-container">
+        <div class="player-wrapper">
+          <video id="hls-video" controls playsinline></video>
+          <iframe id="embed-iframe" class="hidden" allowfullscreen></iframe>
+        </div>
+        <div class="player-bar">
+          <span class="now-playing-label" id="now-playing-text">Đang phát: ...</span>
+          <button class="btn btn-sm btn-ghost" id="btn-close-player">
+            <i class="fa-solid fa-compress"></i> Thu nhỏ trình phát
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Info Area -->
+      <div class="modal-body" id="modal-body-content">
+        <!-- Injected via main.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-col">
+        <img src="assets/images/yangflix-logo.png" alt="YangFlix" class="footer-logo" />
+        <p class="footer-about">
+          Đảo Phim & YangFlix - Nền tảng xem phim trực tuyến miễn phí hàng đầu. Kho phim điện ảnh 4K HDR, phim bộ, anime vietsub cập nhật liên tục mỗi ngày.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Khám Phá</h4>
+        <ul>
+          <li><a href="#phim-le" onclick="filterCatalog('single')">Phim Lẻ Mới</a></li>
+          <li><a href="#phim-bo" onclick="filterCatalog('series')">Phim Bộ Hay</a></li>
+          <li><a href="#song-ngu" onclick="filterCatalog('song-ngu')">Phim Song Ngữ</a></li>
+          <li><a href="#tai-ung-dung" onclick="navigateTab('tai-ung-dung')">Tải Ứng Dụng</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Tải Ứng Dụng</h4>
+        <ul>
+          <li><a href="https://github.com/Lizamort1/yangflix-app/releases/download/v1.0.0/YangFlix-TV-release.apk">Bản Android TV APK</a></li>
+          <li><a href="https://github.com/Lizamort1/yangflix-app/releases/download/v1.0.0/YangFlix-release.apk">Bản Điện Thoại APK</a></li>
+          <li><a href="#tai-ung-dung" onclick="navigateTab('tai-ung-dung')">Mã Downloader trên TV</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Thông Tin</h4>
+        <ul>
+          <li><a href="#">Giới Thiệu</a></li>
+          <li><a href="#">Chính Sách Bảo Mật</a></li>
+          <li><a href="#">Khiếu Nại Bản Quyền (DMCA)</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 ĐẢO PHIM & YangFlix. Cảm ơn bạn đã đồng hành cùng cộng đồng yêu phim.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Thông báo</div>
+
+  <!-- Scripts -->
+  <script src="assets/js/movies_data.js"></script>
+  <script src="assets/js/details_data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
